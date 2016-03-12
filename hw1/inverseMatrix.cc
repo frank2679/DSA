@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <cstdio>
 using namespace std;
-#define N 200
+#define N 201
 
 void printMatrix(double a[][N], int row);
 void generateIdentityMatrix(double a[][N], int row);
@@ -14,11 +14,8 @@ void multiplyMatrix(double a[][N], double b[][N], double c[][N], int row);
 double errorDetect(double a[][N], double b[][N], int row);
 
 int main(){
-    /********** file input *****/
-    ifstream input;
-    input.open("./io/input_10");
     int row;
-    input >> row;  
+    cin >> row;  
 
     int num_ele;
     num_ele = row*row; 
@@ -28,41 +25,28 @@ int main(){
     p = buffer;
     int i, j; 
     for(i = 0; i < num_ele; i++){
-        input >> *p++;
+        cin >> *p++;
     }
-    input.close();
 
     /********** stored into matrix ******/
-    double A[N][N], B[N][N];
+    double A[N][N], B[N][N], C[N][N];
     p = buffer; // go back to head of array
     for(i = 0; i < row; i++)
         for(j = 0; j < row; j++)
             A[i][j] = *p++; 
 
+    /********* find the inverse and variefy *********/
     if(GuassInverse(A,B,row)){ 
+    	multiplyMatrix(A,B,C,row);
+    	cout << "error is " <<  errorDetect(A, B, row) << endl;
         cout << "Inverse of matrix A is: " << endl;
         printMatrix(B, row);
+    	cout << "multiply A and B: " << endl;
+    	printMatrix(C, row);
     }
     else
         cout << "The matrix has no inverse matrix." << endl;
-    /********** variefy ************/
-    double C[N][N];
-    multiplyMatrix(A,B,C,row);
-    cout << "multiply A and B: " << endl;
-    printMatrix(C, row);
-    cout << "error is " <<  errorDetect(A, B, row) << endl;
-    /********** file output *********/
-    ofstream output;
-    output.open("./io/output_result");
-    p = buffer;
-    for(i = 0; i < row; i++){
-        output << setw(4);
-        for(j = 0; j < row; j++)
-            output << *p++ << setw(10); 
-        output << endl; 
-    }
 
-    output.close();
     free(buffer);
     return 0;
 }
