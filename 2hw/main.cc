@@ -1,15 +1,28 @@
+/* B-directional list help search ?
+ * if not, just implement unordered list
+ * reason: can't access element randomly.
+ */
 #include <iostream>
 #include <string>
+#include <list>
 #include "my_header.h"
 using namespace std;
 
-#define N 100
+#define N 10
 int main()
 {
-    struct Entry entry[N];
-    buildStruct(entry);
-    printEntry(entry[0]);
+    list<Entry> mylist;  // list of entry, entry is one piece of log.
+    list<Entry>::iterator it;
+    list<Entry> *ptr_list = &mylist;
+    buildStruct(ptr_list);
+
+    it = mylist.end(); // return a pointer to one plus last element
+    //for(; it != mylist.end(); it++)
+    //{
+        printEntry(*--it); // print the last element
+    //}
     // do interactive according to input
+    /*
     string s; 
     while(cin >> s)
         switch(mapStringInteger(s))
@@ -38,5 +51,6 @@ int main()
             default:
                 cout << "Invalid input" << endl;
         }
+        */
     return 0;
 }
