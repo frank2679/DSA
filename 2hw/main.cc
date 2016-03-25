@@ -15,6 +15,8 @@ int main()
     list<Entry> *ptr_list = &mylist;
     buildStruct(ptr_list);
     cout << "size of data is " << ptr_list->size() << endl;
+    rmDuplicate(ptr_list);
+    cout << "after remove size of data is " << ptr_list->size() << endl;
     
     /********test for accept_cal()**********//*{{{*/
     //int item_ = 1760350;
@@ -22,7 +24,6 @@ int main()
     //cout << "accept_num function of item " << item_ << " return " << accept_cal(item_, ptr_list) << endl;;
     //item_ = 1760351;
     //cout << "accept_num function of item " << item_ << " return " << accept_cal(item_, ptr_list) << endl;;
-    //cout << "after remove size of data is " << ptr_list->size() << endl;
     /*}}}*/
     /********** test for ratio ********//*{{{*/
     //cout << "ratio is " << ratio(ptr_list) << endl;;/*}}}*/
@@ -33,7 +34,7 @@ int main()
     string s; 
     while(n--)
     {
-        cout << "Please select the action(accept, items, users, ratio, findtime_item):" << endl;
+    //    cout << "Please select the action(accept, items, users, ratio, findtime_item):" << endl;
         cin >> s;
         cin.ignore();
         ptr_list = &mylist;

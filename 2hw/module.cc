@@ -123,38 +123,38 @@ bool searchOrderedList(int member, list<int> *ptr_list) // brute force search
 int accept(list<Entry> *ptr_list)
 {/*{{{*/
     // descrition
-    cout << "---------------Description---------------" << endl;
-    cout << "This action will display whether the recommendation is accepted." << endl;
+//    cout << "---------------Description---------------" << endl;
+ //   cout << "This action will display whether the recommendation is accepted." << endl;
     int u, i, t; 
-    cout << "please type in userID, itemID, time " << endl;
-    cout << "u, i, t" << endl;
+  //  cout << "please type in userID, itemID, time " << endl;
+   // cout << "u, i, t" << endl;
     cin >> u >> i >> t;
     list<Entry>::iterator it;
     it = ptr_list->begin();
     for(; it != ptr_list->end(); it++)
         if(u == it->user && i == it->item && t == it->time)
         {
-            cout << "result of user " << u << " given item " << i << " at time " << t << " is " ;
+    //        cout << "result of user " << u << " given item " << i << " at time " << t << " is " ;
             cout << it->result << endl;
             return 0;
         }
-    cout << "Invalid query" << endl;
+  //  cout << "Invalid query" << endl;
     return 1;
 }/*}}}*/
 
 void items(list<Entry> *ptr_list)
 {/*{{{*/
     /************** description ***************/
-    cout << "---------------Description---------------" << endl;
-    cout << "This action will display the items which are given to both u1 and u2 " << endl;/*{{{*/
+    //cout << "---------------Description---------------" << endl;
+    //cout << "This action will display the items which are given to both u1 and u2 " << endl;
     int u1, u2, count = 0, flag = 0;
-    cout << "please type two userID" << endl;
-    cout << "u1, u2" << endl;
+    //cout << "please type two userID" << endl;
+    //cout << "u1, u2" << endl;
     cin >> u1 >> u2;
     list<Entry> u1_list, u2_list;
     list<Entry>::iterator it;
-    it = ptr_list->begin();/*}}}*/
     /***********search and store entry of user1 and user2 ************/
+    it = ptr_list->begin();
     for(; it != ptr_list->end(); it++)
     {/*{{{*/
         if(it->user == u1)
@@ -162,43 +162,40 @@ void items(list<Entry> *ptr_list)
         if(it->user == u2)
             u2_list.push_back(*it);
     }/*}}}*/
-    list<int> item_list;
 
     /************** find the items ***************/
+    list<int> item_list; // store the items given to u1 and u2
     for(it = u1_list.begin(); it != u1_list.end(); it++)
-        for(list<Entry>::iterator it2 = u2_list.begin(); it2 != u2_list.end(); it2++)/*{{{*/
+        for(list<Entry>::iterator it2 = u2_list.begin(); it2 != u2_list.end(); it2++)
             if(it->item == it2->item)
-            {
-                for(list<int>::iterator it3 = item_list.begin(); it3 != item_list.end(); it3++)
-                    if(it->item == *it3)
-                        flag = 1;
-                if(flag == 0)
-                    item_list.push_back(it->item);
-            }/*}}}*/
+                item_list.push_back(it->item);
     item_list.sort();
+    item_list.unique(); // remove duplicate
     /************** display the items ***************/
-    cout << "The items given to both user1 and user2 are " << endl;
+    //cout << "The items given to both user1 and user2 are " << endl;
     for(list<int>::iterator it_item = item_list.begin(); it_item != item_list.end(); it_item++)
     {
         cout << *it_item << endl;
         count++;
     }
-    cout << "total_num number of users given both item1 and item2 is " << count << endl;
+    if(item_list.empty())
+        cout << "no such items" << endl;
+    //cout << "total_num number of users given both item1 and item2 is " << count << endl;
     return ;            
 }/*}}}*/
 
 void users(list<Entry> *ptr_list)
 {/*{{{*/
     /************** description ***************/
-    cout << "---------------Description---------------" << endl;
-    cout << "This action shows the users how are given both i1 and i2 between t1 and t2" << endl;
-    int i1, i2, t1, t2, count = 0, flag = 0;/*{{{*/
-    cout << "please type in two itemIDs and two time slots" << endl;
-    cout << "i1, i2, t1, t2" << endl;
+    //cout << "---------------Description---------------" << endl;
+    //cout << "This action shows the users how are given both i1 and i2 between t1 and t2" << endl;
+    int i1, i2, t1, t2, count = 0, flag = 0;
+    //cout << "please type in two itemIDs and two time slots" << endl;
+    //cout << "i1, i2, t1, t2" << endl;
     cin >> i1 >> i2 >> t1 >> t2;
     list<int> user_list;
-    list<Entry> i1_list, i2_list; // i1_list store the entry with item of i1/*}}}*/
     /*********** search and store entry of item1 and item2 ***************/
+    list<Entry> i1_list, i2_list; // i1_list store the entry with item of i1
     for(list<Entry>::iterator it1 = ptr_list->begin(); it1 != ptr_list->end(); it1++)
     {/*{{{*/
         if(it1->item == i1)
@@ -207,38 +204,51 @@ void users(list<Entry> *ptr_list)
             i2_list.push_back(*it1);
     }/*}}}*/
 
-    /************** find the users ***************/
-    for(list<Entry>::iterator it1 = i1_list.begin(); it1 != i1_list.end(); it1++)
-        for(list<Entry>::iterator it2 = i2_list.begin(); it2 != i2_list.end(); it2++)/*{{{*/
-            if(it1->user == it2->user && it1->time <= t2 && it1->time >= t1 ) // users satisfy the requirement
-            {
-                for(list<int>::iterator it3 = user_list.begin(); it3 != user_list.end(); it3++) // there are duplicate users
-                    if(*it3 == it1->user)
-                        flag = 1;// user has been existed.
-                if(flag == 0)
-                    user_list.push_back(it1->user);/*}}}*/
-}
-user_list.sort();
+    /************** find the users between t1 and t2 ***************/
+    list<Entry>::iterator it1, it2; 
+    it1 = i1_list.begin();
+    for(; it1 != i1_list.end(); it1++)
+        if(it1->time < t1 || it1->time > t2)
+        {
+            i1_list.erase(it1);
+            it1--;
+        }
+    it1 = i2_list.begin();
+    for(; it1 != i2_list.end(); it1++)
+        if(it1->time < t1 || it1->time > t2)
+        {
+            i1_list.erase(it1);
+            it1--;
+        }
+    displayList(&i1_list);
+    displayList(&i2_list);
+    /************** find the users given i1 and i2 ***************/
+    for(it1 = i1_list.begin(); it1 != i1_list.end(); it1++)
+        for(it2 = i2_list.begin(); it2 != i2_list.end(); it2++)/*{{{*/
+            if(it1->user == it2->user) // users satisfy the requirement
+                user_list.push_back(it1->user);/*}}}*/
+    user_list.sort();
+    user_list.unique(); // remove duplicate, duplicate occur continuouly
 /************** display the users ***************/
-cout << "The users given both item1 and item2 between t1 and t2" << endl;
+//cout << "The users given both item1 and item2 between t1 and t2" << endl;
 for(list<int>::iterator it_user = user_list.begin(); it_user != user_list.end(); it_user++)
 {
     cout << *it_user << endl;
     count++;
 }
-cout << "total_num number of users given both item1 and item2 is " << count << endl;
+//cout << "total_num number of users given both item1 and item2 is " << count << endl;
 return ;
 }/*}}}*/
 
 double ratio(list<Entry> *ptr_list)
 {/*{{{*/
     /************** description ***************/
-    cout << "---------------Description---------------" << endl;
-    cout << "This action output the ratio of #accept/#total_num" << endl;/*{{{*/
-    cout << "#total_num is the # of users who are given more than threshold times" << endl;
-    cout << "#accept is the # of users who accept the item i" << endl;
-    cout << endl << "please type in an itemID and a threshold" << endl;
-    cout << "itemID, threshold" << endl;
+    //cout << "---------------Description---------------" << endl;
+   // cout << "This action output the ratio of #accept/#total_num" << endl;/*{{{*/
+    //cout << "#total_num is the # of users who are given more than threshold times" << endl;
+    //cout << "#accept is the # of users who accept the item i" << endl;
+    //cout << endl << "please type in an itemID and a threshold" << endl;
+    //cout << "itemID, threshold" << endl;
     int i, threshold;
     cin >> i >> threshold;/*}}}*/
 
@@ -273,8 +283,8 @@ double ratio(list<Entry> *ptr_list)
     /************ calculate the accept *****************/
     int accept_num; 
     accept_num = accept_cal(i, &targetUser_list);
-    cout << "accept_num is " << accept_num << endl;
-    cout << "total_num is " << total_num << endl;
+    //cout << "accept_num is " << accept_num << endl;
+    //cout << "total_num is " << total_num << endl;
 
     /************ calculate the ratio *****************/
     double ratio;
@@ -287,13 +297,13 @@ double ratio(list<Entry> *ptr_list)
 
 void findtime_item(std::list<Entry> *ptr_list) // Users implemented in different ways.
 {    /************** description ***************//*{{{*/
-    cout << "---------------Description---------------" << endl;
-    cout << "This action shows the time when item i was given to the user group" << endl;
-    cout << "please type in an itemID " << endl;
+    //cout << "---------------Description---------------" << endl;
+    //cout << "This action shows the time when item i was given to the user group" << endl;
+    //cout << "please type in an itemID " << endl;
     int i, userID; 
     list<int> user_group;
     cin >> i; 
-    cout << "please type in userID to user group, type \"#\" to terminate " << endl;
+    //cout << "please type in userID to user group, type \"#\" to terminate " << endl;
     while(cin >> userID)
         if(userID == '#')
             break;
