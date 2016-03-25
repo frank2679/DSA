@@ -45,6 +45,7 @@ void buildStruct(list<Entry> *ptr_list)
 {/*{{{*/
     Entry entry;
     ifstream input;
+    //input.open("/tmp2/KDDCUP2012/track1/rec_log_train.txt");
     input.open("data");
     int a[4] = {0};
     // input data & build data structure
