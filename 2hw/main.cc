@@ -21,10 +21,11 @@ int main()
     /********test for accept_cal()**********//*{{{*/
     //int item_ = 1760350;
     //rmDuplicate(ptr_list);
-    //cout << "accept_num function of item " << item_ << " return " << accept_cal(item_, ptr_list) << endl;;
+    //accept_cal(item_, ptr_list);
     //item_ = 1760351;
     //cout << "accept_num function of item " << item_ << " return " << accept_cal(item_, ptr_list) << endl;;
     /*}}}*/
+
     /********** test for ratio ********//*{{{*/
     //cout << "ratio is " << ratio(ptr_list) << endl;;/*}}}*/
 

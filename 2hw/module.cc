@@ -101,11 +101,16 @@ int accept_cal(int i, list<Entry> *ptr_list)
 {/*{{{*/
     int accept_num;
     list<Entry>::iterator it;
+    list<int> tmp_list; // store userID who are given item i.
     for(it = ptr_list->begin(); it != ptr_list->end(); it++)
     {
         if(it->item == i)
-            accept_num++;
+            tmp_list.push_back(it->user);
     }
+    // sort then unique to remove duplicate
+    tmp_list.sort();
+    tmp_list.unique();
+    accept_num = tmp_list.size();
     return accept_num;
 }/*}}}*/
 
@@ -220,8 +225,6 @@ void users(list<Entry> *ptr_list)
             i1_list.erase(it1);
             it1--;
         }
-    displayList(&i1_list);
-    displayList(&i2_list);
     /************** find the users given i1 and i2 ***************/
     for(it1 = i1_list.begin(); it1 != i1_list.end(); it1++)
         for(it2 = i2_list.begin(); it2 != i2_list.end(); it2++)/*{{{*/
@@ -283,16 +286,22 @@ double ratio(list<Entry> *ptr_list)
     /************ calculate the accept *****************/
     int accept_num; 
     accept_num = accept_cal(i, &targetUser_list);
-    //cout << "accept_num is " << accept_num << endl;
-    //cout << "total_num is " << total_num << endl;
+    cout << "accept_num is " << accept_num << endl;
+    cout << "total_num is " << total_num << endl;
 
     /************ calculate the ratio *****************/
     double ratio;
     if(total_num != 0)
+    {
         ratio = double(accept_num)/double(total_num);
+        cout << ratio << endl;
+        return ratio;
+    }
     else
+    {
+        cout << 0;
         return 0;
-    return ratio;
+    }
 }/*}}}*/
 
 void findtime_item(std::list<Entry> *ptr_list) // Users implemented in different ways.
@@ -305,11 +314,14 @@ void findtime_item(std::list<Entry> *ptr_list) // Users implemented in different
     cin >> i; 
     //cout << "please type in userID to user group, type \"#\" to terminate " << endl;
     while(cin >> userID)
-        if(userID == '#')
-            break;
-        else
-            user_group.push_back(userID);
+        user_group.push_back(userID);
+
     user_group.sort(); // help search the group
+    
+    for(list<int>::iterator it = user_group.begin(); it != user_group.end(); it++)
+        cout << *it << " " ;
+    cout << endl;
+    
     // body
     list<Entry>::iterator it;
     for(it = ptr_list->begin(); it != ptr_list->end(); it++)
