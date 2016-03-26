@@ -35,10 +35,7 @@ int main()
     string s; 
     while(n--)
     {
-    //    cout << "Please select the action(accept, items, users, ratio, findtime_item):" << endl;
         cin >> s;
-        cin.ignore();
-        ptr_list = &mylist;
         switch(mapStringInteger(s))
         {
             case 1: 

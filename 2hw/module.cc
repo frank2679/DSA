@@ -3,9 +3,9 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <algorithm>
 #include "my_header.h"
 using namespace std;
-#define N 10 // N entries at a time
 
 // help functions
 void printEntry(Entry &entry) // print will cost much time
@@ -105,7 +105,7 @@ int accept_cal(int i, list<Entry> *ptr_list)
     list<int> tmp_list; // store userID who are given item i.
     for(it = ptr_list->begin(); it != ptr_list->end(); it++)
     {
-        if(it->item == i)
+        if(it->item == i && it->result == 1)
             tmp_list.push_back(it->user);
     }
     // sort then unique to remove duplicate
@@ -129,22 +129,22 @@ bool searchOrderedList(int member, list<int> *ptr_list) // brute force search
 int accept(list<Entry> *ptr_list)
 {/*{{{*/
     // descrition
-//    cout << "---------------Description---------------" << endl;
- //   cout << "This action will display whether the recommendation is accepted." << endl;
+    //    cout << "---------------Description---------------" << endl;
+    //   cout << "This action will display whether the recommendation is accepted." << endl;
     int u, i, t; 
-  //  cout << "please type in userID, itemID, time " << endl;
-   // cout << "u, i, t" << endl;
+    //  cout << "please type in userID, itemID, time " << endl;
+    // cout << "u, i, t" << endl;
     cin >> u >> i >> t;
     list<Entry>::iterator it;
     it = ptr_list->begin();
     for(; it != ptr_list->end(); it++)
         if(u == it->user && i == it->item && t == it->time)
         {
-    //        cout << "result of user " << u << " given item " << i << " at time " << t << " is " ;
+            //        cout << "result of user " << u << " given item " << i << " at time " << t << " is " ;
             cout << it->result << endl;
             return 0;
         }
-  //  cout << "Invalid query" << endl;
+    //  cout << "Invalid query" << endl;
     return 1;
 }/*}}}*/
 
@@ -210,6 +210,7 @@ void users(list<Entry> *ptr_list)
             i2_list.push_back(*it1);
     }/*}}}*/
 
+
     /************** find the users between t1 and t2 ***************/
     list<Entry>::iterator it1, it2; 
     it1 = i1_list.begin();
@@ -233,22 +234,22 @@ void users(list<Entry> *ptr_list)
                 user_list.push_back(it1->user);/*}}}*/
     user_list.sort();
     user_list.unique(); // remove duplicate, duplicate occur continuouly
-/************** display the users ***************/
-//cout << "The users given both item1 and item2 between t1 and t2" << endl;
-for(list<int>::iterator it_user = user_list.begin(); it_user != user_list.end(); it_user++)
-{
-    cout << *it_user << endl;
-    count++;
-}
-//cout << "total_num number of users given both item1 and item2 is " << count << endl;
-return ;
+    /************** display the users ***************/
+    //cout << "The users given both item1 and item2 between t1 and t2" << endl;
+    for(list<int>::iterator it_user = user_list.begin(); it_user != user_list.end(); it_user++)
+    {
+        cout << *it_user << endl;
+        count++;
+    }
+    //cout << "total_num number of users given both item1 and item2 is " << count << endl;
+    return ;
 }/*}}}*/
 
 double ratio(list<Entry> *ptr_list)
 {/*{{{*/
     /************** description ***************/
     //cout << "---------------Description---------------" << endl;
-   // cout << "This action output the ratio of #accept/#total_num" << endl;/*{{{*/
+    // cout << "This action output the ratio of #accept/#total_num" << endl;/*{{{*/
     //cout << "#total_num is the # of users who are given more than threshold times" << endl;
     //cout << "#accept is the # of users who accept the item i" << endl;
     //cout << endl << "please type in an itemID and a threshold" << endl;
@@ -256,32 +257,37 @@ double ratio(list<Entry> *ptr_list)
     int i, threshold;
     cin >> i >> threshold;/*}}}*/
 
-    // 0. remove duplicate
-    //    rmDuplicate(ptr_list); // rmD here maybe not efficient
     /************** calculate the total_num ***************/
     int total_num = 0;
     map<int, int> user_map;
     list<Entry>::iterator it1 = ptr_list->begin();
-    // 1. build map 
+    // 1. build map , cost 0.5s too heavy
+    int size = 0;
     for(; it1 != ptr_list->end(); it1++)
-        user_map[it1->user] += 1; 
-    // 2. find count > threshold and build a list of such users
+    {
+        if(size < it1->user)
+            size = it1->user;
+    }
+    vector<int> user_vec(size, 0);
+    it1 = ptr_list->begin();
+    for( int i; it1 != ptr_list->end(); it1++)
+    {
+        i = it1->user;
+        user_vec[i]++ ;
+    }
+    // 2. find count > threshold and build a list of such users, cost 0.6s too heavy
     list<Entry> targetUser_list;
     it1 = ptr_list->begin();
     for(; it1 != ptr_list->end(); it1++)
     {
-        if(user_map[it1->user] > threshold)
+        if(user_vec[it1->user] > threshold)
         {
             targetUser_list.push_back(*it1); // this list should be used
         }
     }
-    // ????????
-    //displayList(&targetUser_list);
-    //rmDuplicate(&targetUser_list); // why it cannot remove the duplicate of the list
-    //displayList(&targetUser_list);
     // 3. calculate total_num 
-    for(map<int, int>::iterator it = user_map.begin(); it != user_map.end(); it++)
-        if(it->second > threshold)
+    for(vector<int>::iterator it = user_vec.begin(); it != user_vec.end(); it++)
+        if(*it > threshold)
             total_num++;
 
     /************ calculate the accept *****************/
@@ -314,22 +320,26 @@ void findtime_item(std::list<Entry> *ptr_list) // Users implemented in different
     list<int> user_group;
     cin >> i; 
     //cout << "please type in userID to user group, type \"#\" to terminate " << endl;
-    while(cin >> userID)
+    while(1)
+    {
+        cin >> userID;
+        if(!cin)
+        {
+            cin.clear();
+            break;
+        }
         user_group.push_back(userID);
+    }
 
     user_group.sort(); // help search the group
-    
-    for(list<int>::iterator it = user_group.begin(); it != user_group.end(); it++)
-        cout << *it << " " ;
-    cout << endl;
-    
+
     // body
     list<Entry>::iterator it;
     for(it = ptr_list->begin(); it != ptr_list->end(); it++)
     {
         if(it->item == i)
             if(searchOrderedList(it->user, &user_group))
-                    cout << it->time << endl;
+                cout << it->time << endl;
     }
     return;
 }/*}}}*/
