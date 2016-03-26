@@ -258,8 +258,6 @@ double ratio(list<Entry> *ptr_list)
     cin >> i >> threshold;/*}}}*/
 
     /************** calculate the total_num ***************/
-    int total_num = 0;
-    map<int, int> user_map;
     list<Entry>::iterator it1 = ptr_list->begin();
     // 1. build map , cost 0.5s too heavy
     int size = 0;
@@ -268,13 +266,16 @@ double ratio(list<Entry> *ptr_list)
         if(size < it1->user)
             size = it1->user;
     }
+    size++; // if not, the largest element will be discarded. 
+    cout << "size is " << size << endl;
     vector<int> user_vec(size, 0);
     it1 = ptr_list->begin();
-    for( int i; it1 != ptr_list->end(); it1++)
+
+    for( ; it1 != ptr_list->end(); it1++)
     {
-        i = it1->user;
-        user_vec[i]++ ;
+        user_vec[it1->user]++ ;
     }
+
     // 2. find count > threshold and build a list of such users, cost 0.6s too heavy
     list<Entry> targetUser_list;
     it1 = ptr_list->begin();
@@ -286,10 +287,12 @@ double ratio(list<Entry> *ptr_list)
         }
     }
     // 3. calculate total_num 
+    int total_num = 0;
     for(vector<int>::iterator it = user_vec.begin(); it != user_vec.end(); it++)
+    { 
         if(*it > threshold)
             total_num++;
-
+    }
     /************ calculate the accept *****************/
     int accept_num; 
     accept_num = accept_cal(i, &targetUser_list);
@@ -297,18 +300,7 @@ double ratio(list<Entry> *ptr_list)
     cout << "total_num is " << total_num << endl;
 
     /************ calculate the ratio *****************/
-    double ratio;
-    if(total_num != 0)
-    {
-        ratio = double(accept_num)/double(total_num);
-        cout << ratio << endl;
-        return ratio;
-    }
-    else
-    {
-        cout << 0;
-        return 0;
-    }
+    return 0;
 }/*}}}*/
 
 void findtime_item(std::list<Entry> *ptr_list) // Users implemented in different ways.
